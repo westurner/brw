@@ -1,0 +1,177 @@
+<!DOCTYPE html >
+<html>
+  <head>
+    <title>browlink</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
+    <script type="text/javascript">
+
+    var links = ['https://westurner.org', 'https://wrdrd.com'];
+
+    var json_url = "/westurner-wikipaintings.list[str].json"
+    // links = json.parse($http.get('./westurner-wikipaintings.list[str].json');)
+    // ajax
+
+    i = 0;
+    var main = function() {
+
+      main = $('#main')[0];
+      current = $("#current");
+      prev = $("#prev");
+      next = $("#next");
+
+      link_list_window = $("div#link_list_window");
+      link_list_toggle = $("button#link_list_toggle");
+
+      link_list_toggle.bind("click", function(e) {
+        link_list_window.toggle();
+      });
+
+      update_link_list = function() {
+        link_list = $("ul#link_list");
+        link_list.empty();
+        var appendLink = function(_link) {
+          li = $('<li></li>');
+          a = $('<a/>', {
+            href: '##' + _link,
+            text: _link,
+          });
+          a.data({ i: __i });
+          a.bind("click", function(e) {
+            var elem = $(e.srcElement);
+            var link_i = elem.data('i');
+            update_url(links[link_i]);
+            link_list_window.hide();
+
+            console.log(document.location);
+          });
+          li.append(a);
+          link_list.append(li);
+        }
+        for (var __i = 0; __i < links.length; __i++) {
+          appendLink(links[__i])
+        }
+      };
+
+      update_url = function(url) {
+        console.log("update url to: " + url);
+        //main.attr("src",url);
+        //main.location = url;
+        main.src = url;
+        current.attr("href",url);
+        current.text(url);
+        window.location.hash = '##' + url;
+        history.pushState({}, '', window.location.hash);
+      };
+
+      prev.bind("click", function(e) {
+        if (i >= 1) {
+          i = i - 1;
+        } else {
+          i = links.length - 1;
+        }
+        update_url(links[i]);
+      });
+
+      next.bind("click", function(e) {
+        if (i < links.length- 1) {
+          i = i + 1;
+        } else {
+          i = 0;
+          console.log('this is the end.');
+        }
+        update_url(links[i]);
+      });
+
+      $(window).on("popstate", function(e) {
+        if (e.originalEvent.state !== null) {
+          loadPage(location.href);
+        }
+      });
+
+      loc_hash = window.location.hash;
+      var parseLocationHash = function(loc_hash) {
+        if ((loc_hash.length > 2) && (loc_hash.substr(0,2) === '##')) {
+          var loc_hash_url = loc_hash.substr(2);
+          return loc_hash_url;
+        }
+        return false;
+      }
+
+      var loc_hash_url = parseLocationHash(window.location.hash);
+
+      if (loc_hash_url != false) {
+        links.push(loc_hash_url); // TODO
+        update_url(loc_hash_url);
+      } else {
+        update_url(links[i]);
+      };
+
+      window.onhashchange = function(e) {
+        // console.log(e); // e.newURL , e.oldURL
+        var loc_hash_url = parseLocationHash(window.location.hash);
+        if (loc_hash_url != false) {
+          links.push(loc_hash_url); // TODO
+          update_link_list();
+          update_url(loc_hash_url);
+        } else {
+          update_url(links[i]);
+        };
+      };
+
+      console.log('here');
+      $.getJSON(json_url, {},
+        function( data ) {
+          console.log('JSON data fetched');
+          console.log(data);
+          $.each( data, function( val ) {
+            links.push(val);
+          });
+          update_link_list(); // [ ... react, angular ... ]
+        },
+        function(e) {
+            console.log(e);
+        }
+      );
+      update_link_list();
+    };
+    $(document).ready(main);
+  </script>
+  <style>
+    div#nav {
+      background: #f2f2f2;
+      border-bottom: 1px solid #dcdcdc;
+    }
+    div#content_frame {
+      box-shadow: -2px -2px 6px #e0e0e0;
+    }
+
+    div#link_list_window {
+      display: none;
+      z-index: 10000;
+      width: 800px;
+      height: 300px;
+      background: #f2f2f2;
+      border: 1px solid #dcdcdc;
+      position: absolute;
+      overflow: scroll;
+    }
+    ul#link_list {
+      list-style-type: none;
+    }
+  </style>
+  </head>
+  <body style="margin:0px;padding:0px;overflow:hidden">
+    <div id="nav" style="height:20px;position:absolute;width:100%">
+      <button id="prev" href="#">Prev</button>
+      <button id="next" href="#">Next</button>
+      <button id="link_list_toggle" href='#'>toggle link list</button>
+      <a id="current" href="#" target="_blank">[current URL]</a>
+      <div id="link_list_window">
+        <ul id="link_list"></ul>
+      </div>
+    </div>
+    <div class="content_frame">
+      <iframe id="main" frameborder="0" style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:150%;width:100%;position:absolute;top:21px;left:0px;right:0px;bottom:0px" height="150%" width="100%"></iframe>
+    </div>
+  </body>
+</html>
