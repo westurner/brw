@@ -2,7 +2,7 @@
 
 var links = ['https://westurner.org', 'https://wrdrd.com'];
 
-var json_url = "/tests/data/westurner-wikipaintings.list[str].json";
+var json_url = "tests/data/westurner-wikipaintings.list[str].json";
 
 var link_list_max = 0;
 
