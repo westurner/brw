@@ -1,6 +1,6 @@
 "use strict";
 
-var links = ['https://westurner.org', 'https://wrdrd.com'];
+var links = ['https://westurner.org'];
 
 var json_url = "tests/data/westurner-wikipaintings.list[str].json";
 
