@@ -5,6 +5,9 @@ var links = ['https://westurner.org'];
 var json_url = "tests/data/westurner-wikipaintings.list[str].json";
 
 var link_list_max = 0;
+var link_hist = [];
+
+var store_link_hist = false;
 
 var i = 0;
 var main = function() {
@@ -57,6 +60,13 @@ var main = function() {
     current.text(url);
     window.location.hash = '##' + url;
     history.pushState({}, '', window.location.hash);
+    if (store_link_hist) {
+      link_hist.append(url);
+    }
+    if ($.inArray(url, links) == -1) {
+      links.push(url); // TODO
+      update_link_list();
+    }
     $('#link_list a').removeClass('active');
     var elem = $('#link_list a[href="##' + url + '"]');
     if (elem) {
@@ -101,7 +111,6 @@ var main = function() {
   var loc_hash_url = parseLocationHash(window.location.hash);
 
   if (loc_hash_url != false) {
-    links.push(loc_hash_url); // TODO
     update_url(loc_hash_url);
   } else {
     update_url(links[i]);
@@ -111,15 +120,10 @@ var main = function() {
     // console.log(e); // e.newURL , e.oldURL
     var loc_hash_url = parseLocationHash(window.location.hash);
     if (loc_hash_url != false) {
-      links.push(loc_hash_url); // TODO
-      update_link_list();
       update_url(loc_hash_url);
-    } else {
-      update_url(links[i]);
     };
   };
 
-  console.log('here');
   console.log(json_url);
   $.getJSON(json_url
   ).done(function(data, textStatus, xhr) {
