@@ -8,6 +8,7 @@
       div#nav {
         background: #f2f2f2;
         border-bottom: 1px solid #dcdcdc;
+        padding: 0 4px;
       }
       div#content_frame {
         box-shadow: -2px -2px 6px #e0e0e0;
@@ -20,25 +21,46 @@
         background: #f2f2f2;
         border: 1px solid #dcdcdc;
         position: absolute;
+        right: 0;
+        top: 20px;
+        padding: 4px;
         overflow: scroll;
       }
       ul#link_list {
         list-style-type: none;
+        padding-left: 6px;
       }
       ul#link_list a.active {
         font-weight: bold;
+      }
+      div#carousel_options {
+        float: right;
+      }
+      div#time_display {
+        display: block;
+        width: 20px;
+      }
+
+      input#seconds_per_frame, input#time_display {
+        width: 30px;
       }
     </style>
   </head>
   <body style="margin:0px;padding:0px;overflow:hidden">
     <div id="nav" style="height:20px;position:absolute;width:100%">
-      <button id="prev" href="#">Prev</button>
-      <button id="next" href="#">Next</button>
-      <button id="link_list_toggle" href='#'>toggle link list</button>
       <a id="current" href="#" target="_blank">[current URL]</a>
       <div id="link_list_window">
         <ul id="link_list"></ul>
       </div>
+      <div id="carousel_options">
+        <button id="link_list_toggle" href='#'>toggle link list</button>
+        <button id="prev" href="#">Prev</button>
+        <button id="next" href="#">Next</button>
+        <input type="checkbox" id="carousel_on">on/off</input>
+        <input id="seconds_per_frame"></input>
+        <input id="time_display"></input>
+      </div>
+    </div>
     </div>
     <div class="content_frame">
       <iframe id="main" frameborder="0" style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:150%;width:100%;position:absolute;top:21px;left:0px;right:0px;bottom:0px" height="150%" width="100%"></iframe>

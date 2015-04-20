@@ -24,6 +24,7 @@ var main = function() {
     link_list_window.toggle();
   });
 
+
   var update_link_list = function() {
     var link_list = $("ul#link_list");
     link_list.empty();
@@ -64,7 +65,7 @@ var main = function() {
       link_hist.append(url);
     }
     if ($.inArray(url, links) == -1) {
-      links.push(url); // TODO
+      links.push(url);
       update_link_list();
     }
     $('#link_list a').removeClass('active');
@@ -75,16 +76,17 @@ var main = function() {
     }
   };
 
-  prev.bind("click", function(e) {
+  var prev_link = function(e) {
     if (i >= 1) {
       i = i - 1;
     } else {
       i = links.length - 1;
     }
     update_url(links[i]);
-  });
+  };
+  prev.bind("click", prev_link);
 
-  next.bind("click", function(e) {
+  var next_link = function(e) {
     if (i < links.length- 1) {
       i = i + 1;
     } else {
@@ -92,7 +94,8 @@ var main = function() {
       console.log('this is the end.');
     }
     update_url(links[i]);
-  });
+  };
+  next.bind("click", next_link);
 
   $(window).on("popstate", function(e) {
     if (e.originalEvent.state !== null) {
@@ -144,5 +147,43 @@ var main = function() {
   });
   console.log('here');
   update_link_list();
+
+
+  var start = +(new Date);
+
+  var carousel_on = false;
+  $('#carousel_on').bind("click", function(e) {
+    carousel_on = $(e.srcElement).prop("checked");
+    console.log("click");
+    console.log(carousel_on);
+    console.log(e);
+    start = +(new Date);
+  });
+  $('#carousel_on').prop("checked", carousel_on);
+
+  var seconds_per_frame = 20;
+  $('#seconds_per_frame').bind("change", function(e) {
+    var elem = $(e.srcElement);
+    var _value = parseInt(elem.prop("value"));
+    if (_value < 10) {
+      _value = 10;
+      elem.prop("value", value);
+    }
+    seconds_per_frame = _value;
+  });
+  $('#seconds_per_frame').prop("value", seconds_per_frame);
+
+  var time_display = $('#time_display');
+  setInterval(function() {
+    if (carousel_on) {
+      var now = +(new Date);
+      var seconds = Math.round((now - start)/1000);
+      time_display.prop("value", seconds_per_frame - seconds);
+      if (seconds > seconds_per_frame) {
+        next_link();
+        start = +(new Date);
+      }
+    }
+  }, 1000);
 };
 $(document).ready(main);
