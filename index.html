@@ -4,6 +4,18 @@
     <title>brw</title>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.2/jquery.min.js"></script>
     <script src="brw.js"></script>
+    <script>
+	var json_url;
+	//json_url = "/bookmarks/chrome/links.json";
+	json_url = "tests/data/westurner-wikipaintings.list[str].json";
+	var brw0;
+	$(document).ready(function() {
+	  brw0 = $("#nav").brw({
+	    "seconds_per_frame": 20,
+	    "json_url": json_url
+	  });
+	});
+    </script>
     <style>
       div#nav {
         background: #f2f2f2;
@@ -56,14 +68,13 @@
         <button id="link_list_toggle" href='#'>toggle link list</button>
         <button id="prev" href="#">Prev</button>
         <button id="next" href="#">Next</button>
-        <input type="checkbox" id="carousel_on">on/off</input>
+        <label><input id="carousel_on_off" type="checkbox">on/off</input></label>
         <input id="seconds_per_frame"></input>
         <input id="time_display"></input>
       </div>
     </div>
-    </div>
     <div class="content_frame">
-      <iframe id="main" frameborder="0" style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:150%;width:100%;position:absolute;top:21px;left:0px;right:0px;bottom:0px" height="150%" width="100%"></iframe>
+      <iframe id="main" frameborder="0" style="overflow:hidden;overflow-x:hidden;overflow-y:hidden;height:100%;width:100%;position:absolute;top:21px;left:0px;right:0px;bottom:0px" height="100%" width="100%"></iframe>
     </div>
   </body>
 </html>
