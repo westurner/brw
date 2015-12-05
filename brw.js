@@ -108,15 +108,6 @@
 	}
       });
 
-      // on_init: update_url(parse(window.location.hash))
-      var loc_hash_url = this.parseLocationHash(window.location.hash);
-
-      if (loc_hash_url != false) {
-	console.log("there is a URL specified");
-	this.update_url(loc_hash_url);
-      //} else {
-      //this.update_url(this.data.links[this.data.i]);
-      };
 
       // onhashchage: update_url(parse(window.location.hash))
       window.onhashchange = function(e) {
@@ -127,8 +118,22 @@
 	};
       };
 
+      // on_init__update_url
+      function on_init__update_url(this__) {
+	// on_init: update_url(parse(window.location.hash))
+	var loc_hash_url = this__.parseLocationHash(window.location.hash);
+
+	if (loc_hash_url != false) {
+	  console.log("there is a URL specified");
+	  this__.update_url(loc_hash_url);
+	//} else {
+	//this.update_url(this.data.links[this.data.i]);
+	};
+      }
+
+
       // on_init: load_json(json_url)
-      this.load_json(this.data.json_url);
+      this.load_json(this.data.json_url, on_init__update_url);
       //// this.update_link_list(this.data.links);
 
       // carousel_on_off.on_click: toggle on/off and reset timer
@@ -249,9 +254,10 @@
     * load_json: load JSON from a URL (with $.getJSON)
     *
     * @param {string} json_url - URL to a JSON string
+    * @param {function} success_callback - a callback function for .getJSON.don
     * @return { }
     */
-    load_json: function(json_url) {
+    load_json: function(json_url, success_callback) {
       var this__ = this;
       var conf = {}
 
@@ -277,6 +283,10 @@
 	    this__.data.links.push(val);
 	  });
 	  this__.update_link_list(this__.links);
+
+	  if (success_callback) {
+	     success_callback(this__);
+	  }
 	  // [ ... react, angular ... ]
 	})
 	.fail(function(xhr, textStatus, errorThrown) {
