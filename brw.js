@@ -126,21 +126,14 @@
 
       // on_init__update_url
       function on_init__update_url(this__) {
-	// on_init: update_url(parse(window.location.hash))
 	var loc_hash_url = this__.parseLocationHash(window.location.hash);
-
 	if (loc_hash_url != false) {
 	  console.log("there is a URL specified");
 	  this__.update_url(loc_hash_url);
-	//} else {
-	//this.update_url(this.data.links[this.data.i]);
 	};
       }
 
-
-      // on_init: load_json(json_url)
       this.load_json(this.data.json_url, on_init__update_url);
-      //// this.update_link_list(this.data.links);
 
       // carousel_on_off.on_click: toggle on/off and reset timer
       this.elems.carousel_on_off.bind("click", function(e) {
@@ -458,6 +451,7 @@
 	//this.append_link(url);
 	this.update_link_list(this.data.links);
       }
+
 
       // update the link styling
       // TODO FIXE: this.elems.link_list.FIND('a')
