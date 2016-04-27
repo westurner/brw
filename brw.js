@@ -399,6 +399,7 @@
       var output = $('div#link_list_window').scrollTo(
         elem, 0,
         {
+          offset: -18,
           margin: true,
           limit: false}
       );
