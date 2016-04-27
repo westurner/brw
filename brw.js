@@ -90,8 +90,14 @@
       this.elems.link_list_toggle = $("button#link_list_toggle");
       this.elems.link_list = $("ul#link_list");
 
+      this.elems.link_list_window.css("display", "block");
+      this.elems.link_list_window.css("visibility", "hidden");
       this.elems.link_list_toggle.bind("click", function(e) {
-	this__.elems.link_list_window.toggle();
+          if (this__.elems.link_list_window.css("visibility") == "hidden") {
+            this__.elems.link_list_window.css("visibility", "visible");
+          } else {
+            this__.elems.link_list_window.css("visibility", "hidden");
+          }
       });
 
       this.elems.prev.bind("click", function(e) {
@@ -375,7 +381,7 @@
 	this__.update_url(url);
 
 	if (this__.opts.hide_link_list_on_select) { // TODO: this.data
-	  this__.elems.link_list_window.hide();
+    this__.elems.link_list_toggle.css("visibility", "hidden");
 	}
 
 	console.log(document.location);
@@ -385,6 +391,25 @@
       li.append(a);
       this.elems.link_list.append(li);
       return li;
+    },
+
+
+  /** scroll_to_link - scroll to a link in link_list
+    * @param {string} url - url to scroll to first instance of
+    *
+    */
+    scroll_to_link: function(url) {
+      console.log("scroll_to_link: " + url);
+      var elem_selector = 'a[href="##' + url + '"]'; // TODO
+      var elem = $('ul#link_list').find(elem_selector);
+      var output = $('div#link_list_window').scrollTo(elem, 0,
+                                                      // TODO: cache div ref
+        {
+         margin: true,
+         limit: false}
+      );
+      console.log(output);
+      return elem;
     },
 
   /**
@@ -448,6 +473,7 @@
 	console.log("i:");
 	console.log(this.data.i);
 	elem.addClass('active');
+        this.scroll_to_link(url);
       }
     },
 
