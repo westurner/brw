@@ -200,6 +200,7 @@
         var t_seconds = this.data.seconds_per_frame;
       }
       this.set_timer(t_seconds);
+      this.set_time_display();
       this.data._dt = +(new Date);
       return t_seconds;
     },
@@ -210,6 +211,9 @@
     * @param {number} t_seconds - Time in seconds to show
     */
     set_time_display: function (t_seconds) {
+      if (t_seconds === undefined) {
+        t_seconds = "";
+      }
       this.elems.time_display.prop("value", t_seconds);
     },
 
