@@ -138,7 +138,7 @@
       // carousel_on_off.on_click: toggle on/off and reset timer
       this.elems.carousel_on_off.bind("click", function(e) {
         this__.data.carousel_on_off = (
-          $(e.srcElement).prop("checked"));
+          $(e.target).prop("checked"));
           console.log("carousel_on_off.click");
           console.log(this__.data.carousel_on_off);
           console.log(e);
@@ -149,7 +149,7 @@
 
       // seconds_per_frame.change: reset timer(t_seconds)
       this.elems.seconds_per_frame.bind("change", function(e) {
-        var elem = $(e.srcElement);
+        var elem = $(e.target);
         var t_seconds = parseInt(elem.prop("value"));
         if (t_seconds < 10) {
           t_seconds = 10;
@@ -371,7 +371,7 @@
       }
       a.data({ i: i_next }); // !!! max(this.elems.link_list.length) TODO
       a.bind("click", function(e) {
-        var elem = $(e.srcElement);
+        var elem = $(e.target);
         var link_i = elem.data('i');
         var url = this__.links[link_i];
         this__.i = link_i;
