@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>brw2</title>
+    <script src="static/js/react/react-with-addons.js"></script>
+    <script src="static/js/react/react-dom.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/6.12.0/babel.min.js"></script>
+    <script src="static/js/jquery/2.2.3/jquery.min.js"></script>
+    <script src="static/js/jquery-scrollTo/2.1.2/jquery.scrollTo.min.js"></script>
+    <script type="text/babel" src="brw2.js"></script>
+  </head>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    div#nav {
+      background: #f2f2f2;
+      border-bottom: 1px solid #dcdcdc;
+      padding: 0 4px;
+      height:20px;
+      position:absolute;
+      width:100%
+    }
+    div.contentFrame {
+      box-shadow: -2px -2px 6px #e0e0e0;
+    }
+    div.contentFrame iframe {
+      overflow:hidden;
+      overflow-x:hidden;
+      overflow-y:hidden;
+      height:100%;
+      width:100%;
+      position:absolute;
+      top:21px;
+      left:0px;
+      right:0px;
+      bottom:0px;
+      border:0;
+    }
+    div#thingList_window {
+      display: block;
+      visibility: hidden;
+      z-index: 10000;
+      width: 800px;
+      height: 300px;
+      background: #f2f2f2;
+      border: 1px solid #dcdcdc;
+      position: absolute;
+      right: 0;
+      top: 20px;
+      padding: 4px;
+      overflow-y: scroll;
+    }
+    div.jsonUrlList {
+      background: #e2e2e2;
+    }
+    ul#thingList, ul#jsonUrlList {
+      list-style-type: none;
+      padding-left: 6px;
+      word-wrap: break-word;
+    }
+    ul#thingList {
+      margin: 4px;
+      margin-left: 0px;
+    }
+    ul#thingList li {
+      border-left: 6px solid #cecece;
+      padding-left: 2px;
+      margin-bottom: 2px;
+    }
+    ul#jsonUrlList {
+      padding: 2px 0 0 6px;
+      margin: 0;
+    }
+    ul#thingList a.active {
+      font-weight: bold;
+    }
+    div#carousel_options {
+      float: right;
+      margin-top: -3px;
+    }
+    div#time_display {
+      display: block;
+      width: 20px;
+    }
+
+    input#secondsPerThing, input#secondsElapsed {
+      width: 30px;
+    }
+  </style>
+  <body>
+    <div id="container"></div>
+  </body>
+</html>
