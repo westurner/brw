@@ -324,6 +324,7 @@ class ThingCarousel extends React.Component {
     event.nativeEvent.preventDefault();
     var elem = $(event.nativeEvent.srcElement);
     this.setUrl(item, i);
+    this.reset();
     console.groupEnd();
   }
 
@@ -337,16 +338,17 @@ class ThingCarousel extends React.Component {
     this.setState({secondsPerThing: t_seconds});
   }
 
-  //handleIframeLoad = (event) => {
-  //  console.group();
-  //  console.log('m:handleIframeLoad');
+  handleIframeLoad = (event) => {
+    console.group();
+    console.log('m:handleIframeLoad');
   //  console.log(event);
   //  console.log(event.nativeEvent);
   //  console.log($(event.nativeEvent.target));
   //  console.log(event.nativeEvent.target.contentWindow);
   //  console.log(event.nativeEvent.target.contentWindow.location); // only works w/ same-origin
-  //  console.groupEnd();
-  //}
+    this.reset()
+    console.groupEnd();
+  }
 
   handleIframeFullscreen(e) {
     //var elem = $('iframe#main')[0];
@@ -584,6 +586,7 @@ class ThingCarousel extends React.Component {
             height="100%" width="100%"
             allowFullScreen="true"
             src={this.state.current ? this.state.current.url : ''}
+            onLoad={this.handleIframeLoad}
             ></iframe>
         </div>
       </div>
