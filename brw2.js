@@ -37,6 +37,7 @@ class ThingCarousel extends React.Component {
     super();
     this.state = {
       secondsPerThing: 20,
+      secondsForThisThing: 20,
       secondsElapsed: 0,
       carouselOn: false,
       navOptionsShow: true,
@@ -69,7 +70,7 @@ class ThingCarousel extends React.Component {
       this._dt = now;
       this.setState({
         secondsElapsed: this.state.secondsElapsed + t_elapsed_s});
-      if (this.state.secondsElapsed > this.state.secondsPerThing) {
+      if (this.state.secondsElapsed > this.state.secondsForThisThing) {
         this.next();
       }
     }
@@ -348,6 +349,7 @@ class ThingCarousel extends React.Component {
     updateObj[i] = {'cssClass': {$set: 'active'}};
     console.log(updateObj);
     this.setState({
+      secondsForThisThing: item.secs ? item.secs : this.state.secondsPerThing,
       thingSequence: React.addons.update(thingSequence, updateObj),
       current: item,
       current_i: i});
@@ -364,7 +366,7 @@ class ThingCarousel extends React.Component {
     console.group();
     console.log('m:setWindowLocationHash');
     console.log(url);
-    console.trace();
+    // console.trace();
     if (history.pushState) {
       window.history.pushState(state, title, url);
     } else {
@@ -417,7 +419,10 @@ class ThingCarousel extends React.Component {
       t_seconds = 10;
       elem.prop("value", t_seconds);
     }
-    this.setState({secondsPerThing: t_seconds});
+    this.setState({
+      secondsPerThing: t_seconds,
+      secondsForThisThing: t_seconds,
+    });
   }
 
   handleIframeLoad = (event) => {
@@ -601,7 +606,11 @@ class ThingCarousel extends React.Component {
       if (typeof(x) == 'string') {
         return {url: x};
       } else {
-        return {url: x.url, name: x.name};
+        return {
+          url: x.url,
+          name: x.name,
+          secs: x.secs,
+        };
       }
     });
   }
@@ -678,6 +687,9 @@ class ThingCarousel extends React.Component {
             <input id="secondsPerThing" type="text"
               onBlur={this.handleSecondsPerFrameChange}
               placeholder={this.state.secondsPerThing}/>
+            <input id="secondsForThisThing" type="text"
+              disabled="true"
+              placeholder={this.state.secondsForThisThing}/>
             <input id="secondsElapsed" type="text"
               readOnly="readonly"
               placeholder={this.state.secondsElapsed}/>
