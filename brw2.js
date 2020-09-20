@@ -77,31 +77,80 @@ class ThingCarousel extends React.Component {
     console.log('m:parseLocationHash');
     console.log(loc_hash);
     var routes = [];
+    var lastRoutes = [];
     if (loc_hash.length > 2) {
       var parts = loc_hash.split(';;');
       for (var i=0; i < parts.length; i++) {
         var part = parts[i];
-        var route = {};
         if (part.substr(0,2) === '##') {
+          var route = {};
           route.name = 'thinglink';
           route.url = part.substr(2);
           route.origUrl = loc_hash;
+          routes.push(route);
         } else if (part.substr(0,2) === '#+') {
+          var route = {};
           route.name = 'jsonlink:append';
           route.url = part.substr(2);
           route.origUrl = loc_hash;
+          routes.push(route);
         } else if (part.substr(0,2) === '#!') {
+          var route = {};
           route.name = 'jsonlink';
           route.url = part.substr(2);
           route.origUrl = loc_hash;
+          routes.push(route);
         } else if (part.substr(0,2) === '#=') {
+          var route = {};
           route.name = 'jsonlink:appendMaybe';
           route.url = part.substr(2);
           route.origUrl = loc_hash;
+          routes.push(route);
         } else if (part.substr(0,2) === '#{') {
-          //json.parse(part.substr(1))
+          console.log("JSON.parse", part.substr(1));
+          urldata = JSON.parse(part.substr(1));
+          console.log(urldata);
+        } else if (part.substr(0,2) === '#?') {
+          var urlParams = new URLSearchParams(part.substr(2));
+          var params = Object.fromEntries(urlParams);
+          console.log("params", params);
+          if ("url" in params) {
+            var route = {};
+            route.name = 'jsonlink:appendMaybe';
+            route.url = params["url"];
+            route.origUrl = loc_hash;
+            routes.push(route);
+          }
+          for (const key of ["fullscreen", "play", "urls"]) {
+            if (key in params) {
+              params[key] = JSON.parse(params[key]);
+              if (key === "urls") {
+                for (const url of params[key]) {
+                  var route = {};
+                  route.name = 'jsonlink:appendMaybe';
+                  route.url = url;
+                  route.origUrl = loc_hash;
+                  routes.push(route);
+                }
+              } else if (key === "fullscreen") {
+                var route = {};
+                route.name = 'fullscreen';
+                route.value = new Boolean(params[key]).valueOf(); // TODO: handle Boolean("this is true") == true
+                lastRoutes.push(route);
+              } else if (key === "play") {
+                var route = {};
+                route.name = 'play';
+                route.value = new Boolean(params[key]).valueOf();
+                lastRoutes.push(route);
+              }
+            }
+          }
+          console.log("parsedParams", params);
         }
-        routes.push(route);
+      }
+      for (var i=0; i < lastRoutes.length; i++) {
+        console.log("append lastRoute", lastRoutes[i]);
+        routes.push(lastRoutes[i]);
       }
     }
     return routes;
@@ -148,6 +197,14 @@ class ThingCarousel extends React.Component {
           this.loadJSON_linklist(route.url, append,
                                 this.handleLoadJSONSuccess.bind(!append));
         }
+      } else if (route.name === 'fullscreen') {
+        console.log("route.name", "fullscreen");
+        this.handleIframeFullscreen({}, route.value);
+      } else if (route.name === 'play') {
+        console.log("route.name", "play");
+        this.handleOnOffClick({}, route.value);
+      } else {
+        console.log("ERROR: unknown route", route);
       }
     }
     if (firstThinglinkItem !== undefined) {
@@ -309,12 +366,17 @@ class ThingCarousel extends React.Component {
     console.groupEnd();
   }
 
-  handleOnOffClick = (elem) => {
-    if (this.state.carouselOn === false) {
-      this.state.carouselOn = true;
+  handleOnOffClick = (elem, forceStatus) => {
+    if (forceStatus !== null) {
+      this.state.carouselOn = forceStatus;
     } else {
-      this.state.carouselOn = false;
+      if (this.state.carouselOn === false) {
+        this.state.carouselOn = true;
+      } else {
+        this.state.carouselOn = false;
+      }
     }
+    console.log('this.state.carouselOn', this.state.carouselOn);
     this._dt = +(new Date); // TODO:
   }
 
@@ -350,18 +412,34 @@ class ThingCarousel extends React.Component {
     console.groupEnd();
   }
 
-  handleIframeFullscreen(e) {
+  handleIframeFullscreen(e, forceStatus) {
     //var elem = $('iframe#main')[0];
     var elem = $('html')[0];
-    if (document.fullscreenElement) {
-      document.exitFullscreen();
-    } else if (document.webkitFullscreenElement) {
-      document.webkitExitFullscreen();
+    if (forceStatus == null) {
+      if (document.fullscreenElement) {
+        document.exitFullscreen();
+      } else if (document.webkitFullscreenElement) {
+        document.webkitExitFullscreen();
+      } else {
+        if (elem.requestFullScreen) {
+          elem.requestFullScreen();
+        } else if (elem.webkitRequestFullScreen) {
+          elem.webkitRequestFullScreen();
+        }
+      }
     } else {
-      if (elem.requestFullScreen) {
-        elem.requestFullScreen();
-      } else if (elem.webkitRequestFullScreen) {
-        elem.webkitRequestFullScreen();
+      if (forceStatus == true) {
+        if (document.fullscreenElement) {
+          elem.requestFullScreen();
+        } else if (document.webkitFullscreenElement) {
+          elem.webkitRequestFullScreen();
+        }
+      } else {
+        if (document.fullscreenElement) {
+          document.exitFullscreen();
+        } else if (document.webkitFullscreenElement) {
+          document.webkitExitFullscreen();
+        }
       }
     }
   }
