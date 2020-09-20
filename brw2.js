@@ -48,7 +48,18 @@ class ThingCarousel extends React.Component {
 
       current_i: undefined,
       current: {},
-      thingSequence: []
+      thingSequence: [],
+
+      urlattrs: [
+        //"url", "urls",
+        "shownav", "play"],
+      urlattrs_all: [
+        "url", "urls", "shownav", "play"],
+      url: undefined,
+      urls: undefined,
+      // fullscreen: undefined, // this requires user input
+      shownav: undefined,
+      play: undefined
     };
     console.log(this.state);
     console.groupEnd();
@@ -189,13 +200,16 @@ class ThingCarousel extends React.Component {
         }
       } else if (route.name.substr(0,8) === 'jsonlink') {
         if (route.url !== undefined) {
-          this.setState({jsonUrl: route.url});
-          this.setWindowLocationHash(
-            {jsonUrl: this.state.jsonUrl,
-              jsonUrlList: this.state.jsonUrlList},
-            null,
-            '#' //route.origUrl // TODO: 
-          );
+          this.setState({
+            jsonUrl: route.url,
+            url: route.url
+          });
+          //this.setWindowLocationHash(
+          //  {jsonUrl: this.state.jsonUrl,
+          //    jsonUrlList: this.state.jsonUrlList},
+          //  null,
+          //  '#' //route.origUrl // TODO: 
+          //);
           var append = false;
           if (route.name === 'jsonlink:append') {
             append = true;
@@ -277,6 +291,15 @@ class ThingCarousel extends React.Component {
     console.groupEnd();
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    for (const attr of this.state.urlattrs_all) {
+      if (prevState[attr] != this.state[attr]) {
+        this.setUrl();
+        break
+      }
+    }
+  }
+
   handleLoadJSONSuccess = (loadNextItem) => {
     console.group();
     console.log('m:handleLoadJSONSuccess');
@@ -309,26 +332,34 @@ class ThingCarousel extends React.Component {
     return -1;
   }
 
-  setUrl = (item, i) => {
+  setUrl = (item, i, playStatus) => {
     console.group();
     console.log("m:setUrl");
     console.log(item);
     console.log(this.state.current);
     console.log(i);
     if (item === undefined) {
-      return false
+      //return false
+      if (this.state.current) {
+        item = this.state.current;
+        i = this.state.current_i;
+      } else {
+        return
+      }
     }
     if (i === undefined) {
-      i = this.findUrl(item); // TODO: this finds the first instance //
-      if (i === -1) {
-        console.log('item not found in self.state.thingSequence');
-        console.log(item);
-        i = 0;
-        this.setState({thingSequence:
-          React.addons.update(this.state.thingSequence,
-            {'$unshift': [item]}), // TODO: splice?
-              current_i: i
-            });
+      if (item.url) {
+        i = this.findUrl(item); // TODO: this finds the first instance //
+        if (i === -1) {
+          console.log('item not found in self.state.thingSequence');
+          console.log(item);
+          i = 0;
+          this.setState({thingSequence:
+            React.addons.update(this.state.thingSequence,
+              {'$unshift': [item]}), // TODO: splice?
+                current_i: i
+              });
+        }
       }
     }
     console.log(i);
@@ -357,9 +388,35 @@ class ThingCarousel extends React.Component {
     this.scrollToLink(elem);
     this._in_setUrl_ = true;
     this.setWindowLocationHash(
-      {'item': item, 'i': i}, null, '##' + item.url);
+      {'item': item, 'i': i},
+      null,
+      this.getStateUrl(item, playStatus)
+    );
     this._in_setUrl_ = false; // TODO: race condition w/ onhashchange evt?
     console.groupEnd();
+  }
+
+  getStateUrl(item) {
+    console.log('getStateUrl');
+    if (item == null) {
+      item = this.state.current;
+    }
+    var urlitems = [];
+    var value;
+    if (this.state.urls.length > 1) {
+      urlitems.push(`urls=${JSON.stringify(this.state.urls)}`);
+    } else {
+      urlitems.push(`url=${this.state.url}`); // TODO: escape this.state.url SEC
+    }
+    for (const key of this.state.urlattrs) {
+      value = this.state[key];
+      console.log(key, value);
+      if (value != null && value) {
+        urlitems.push(`${key}=${JSON.stringify(value)}`);
+      }
+    }
+    console.log('urlitems', urlitems);
+    return `##${item.url};;#?${urlitems.join("&")}`;
   }
 
   setWindowLocationHash(state, title, url) {
@@ -383,8 +440,10 @@ class ThingCarousel extends React.Component {
       carouselOn = this.state.carouselOn ? false : true;
     }
     this.setState({
-      'carouselOn': carouselOn
+      'carouselOn': carouselOn,
+      'play': carouselOn
     });
+    this.setUrl();
     console.log('this.state.carouselOn', carouselOn);
     this._dt = +(new Date); // TODO:
   }
@@ -398,7 +457,8 @@ class ThingCarousel extends React.Component {
     //  navOptionsShow = this.state.navOptionsShow ? false : true;
     //}
     this.setState({
-      'navOptionsShow': navOptionsShow
+      'navOptionsShow': navOptionsShow,
+      'shownav': navOptionsShow
     });
   }
 
@@ -575,15 +635,22 @@ class ThingCarousel extends React.Component {
             current: undefined,
             thingSequence: data_,
             jsonUrl: jsonUrl,
-            jsonUrlList: [jsonUrl]});
+            url: jsonUrl,
+            jsonUrlList: [jsonUrl],
+            urls: [jsonUrl],
+          });
         } else {
           this__.setState({
             thingSequence: React.addons.update(this__.state.thingSequence,
               {$push: data_}),
             jsonUrl: jsonUrl,
+            url: jsonUrl,
             jsonUrlList: React.addons.update(this__.state.jsonUrlList,
               {$push: [jsonUrl]}),
           }); 
+          this__.setState({
+            urls: this.state.jsonUrlList
+          });
         }
         if (successFunc !== undefined) {
           successFunc(data);
