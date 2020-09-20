@@ -227,7 +227,7 @@ class ThingCarousel extends React.Component {
       console.group();
       console.log('m:popstate');
       console.log(e);
-      if (e.originalEvent.state !== null) {
+      if (e.originalEvent.state != null) {
         var state = e.originalEvent.state;
         console.log('popstate!');
         console.log(state);
@@ -367,7 +367,7 @@ class ThingCarousel extends React.Component {
   }
 
   handleOnOffClick = (elem, forceStatus) => {
-    if (forceStatus !== null) {
+    if (forceStatus != null) {
       this.state.carouselOn = forceStatus;
     } else {
       if (this.state.carouselOn === false) {
