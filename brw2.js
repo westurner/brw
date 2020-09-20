@@ -367,16 +367,20 @@ class ThingCarousel extends React.Component {
   }
 
   handleOnOffClick = (elem, forceStatus) => {
+    var carouselOn;
     if (forceStatus != null) {
-      this.state.carouselOn = forceStatus;
+      carouselOn = forceStatus;
     } else {
       if (this.state.carouselOn === false) {
-        this.state.carouselOn = true;
+        carouselOn = true;
       } else {
-        this.state.carouselOn = false;
+        carouselOn = false;
       }
     }
-    console.log('this.state.carouselOn', this.state.carouselOn);
+    this.setState({
+      'carouselOn': carouselOn
+    });
+    console.log('this.state.carouselOn', carouselOn);
     this._dt = +(new Date); // TODO:
   }
 
@@ -650,6 +654,7 @@ class ThingCarousel extends React.Component {
               onClick={this.next}>next</button>
             <label><input type="checkbox"
               onClick={this.handleOnOffClick}
+              checked={this.state.carouselOn}
               />on/off</label>
             <input id="secondsPerThing" type="text"
               onBlur={this.handleSecondsPerFrameChange}
