@@ -47,7 +47,7 @@ class ThingCarousel extends React.Component {
 
       current_i: undefined,
       current: {},
-      things: []
+      thingSequence: []
     };
     console.log(this.state);
     console.groupEnd();
@@ -300,8 +300,8 @@ class ThingCarousel extends React.Component {
   findUrl = (item) => {
     console.log('m:findUrl');
     console.log(item);
-    for (var i = 0; i < this.state.things.length; i++) {
-      if (item.url == this.state.things[i].url) {
+    for (var i = 0; i < this.state.thingSequence.length; i++) {
+      if (item.url == this.state.thingSequence[i].url) {
         return i;
       }
     }
@@ -320,11 +320,11 @@ class ThingCarousel extends React.Component {
     if (i === undefined) {
       i = this.findUrl(item); // TODO: this finds the first instance //
       if (i === -1) {
-        console.log('item not found in self.state.things');
+        console.log('item not found in self.state.thingSequence');
         console.log(item);
         i = 0;
-        this.setState({things:
-          React.addons.update(this.state.things,
+        this.setState({thingSequence:
+          React.addons.update(this.state.thingSequence,
             {'$unshift': [item]}), // TODO: splice?
               current_i: i
             });
@@ -339,7 +339,7 @@ class ThingCarousel extends React.Component {
     //  updateObj[this.state.current_i] = {};
     //  updateObj[this.state.current_i]['cssClass'] = {'$set': ''};
     //}
-    var things = React.addons.update(this.state.things, {
+    var thingSequence = React.addons.update(this.state.thingSequence, {
       '$apply': (x) => { return x.map((y) => { y.cssClass=''; return y; })}});
 
     item.cssClass = 'active';
@@ -348,7 +348,7 @@ class ThingCarousel extends React.Component {
     updateObj[i] = {'cssClass': {$set: 'active'}};
     console.log(updateObj);
     this.setState({
-      things: React.addons.update(things, updateObj),
+      thingSequence: React.addons.update(thingSequence, updateObj),
       current: item,
       current_i: i});
     var elem = $('ul#thingList').find('a#thing-' + i).first()
@@ -467,7 +467,7 @@ class ThingCarousel extends React.Component {
   next = (event) => {
     console.group();
     console.log('m:next');
-    if (!(this.state.things.length)) {
+    if (!(this.state.thingSequence.length)) {
       console.log("no links");
       return;
     }
@@ -477,13 +477,13 @@ class ThingCarousel extends React.Component {
     } else {
       i = -1;
     }
-    if (i < this.state.things.length - 1) {
+    if (i < this.state.thingSequence.length - 1) {
       i = i + 1;
     } else {
       i = 0;
       console.log('this is the end.');
     }
-    this.setUrl(this.state.things[i], i);
+    this.setUrl(this.state.thingSequence[i], i);
     this.reset();
     console.groupEnd();
   }
@@ -491,7 +491,7 @@ class ThingCarousel extends React.Component {
   prev = () => {
     console.group();
     console.log("m:prev");
-    if (!(this.state.things.length)) {
+    if (!(this.state.thingSequence.length)) {
       console.log("no links");
       return;
     }
@@ -504,10 +504,10 @@ class ThingCarousel extends React.Component {
     if (i >= 1) {
       i -= 1;
     } else {
-      i = this.state.things.length - 1;
+      i = this.state.thingSequence.length - 1;
       console.log('this is the beginning.');
     }
-    this.setUrl(this.state.things[i], i);
+    this.setUrl(this.state.thingSequence[i], i);
     this.reset();
     console.groupEnd();
   }
@@ -568,12 +568,12 @@ class ThingCarousel extends React.Component {
           this__.setState({
             current_i: undefined,
             current: undefined,
-            things: data_,
+            thingSequence: data_,
             jsonUrl: jsonUrl,
             jsonUrlList: [jsonUrl]});
         } else {
           this__.setState({
-            things: React.addons.update(this__.state.things,
+            thingSequence: React.addons.update(this__.state.thingSequence,
               {$push: data_}),
             jsonUrl: jsonUrl,
             jsonUrlList: React.addons.update(this__.state.jsonUrlList,
@@ -640,7 +640,7 @@ class ThingCarousel extends React.Component {
             </div>
             <div className="thingList">
               <ul id="thingList">
-              {this.state.things.map((item, i) => {
+              {this.state.thingSequence.map((item, i) => {
                 var cssId = "thing-" + i;
                 var text;
                 if (item.name !== undefined) {
