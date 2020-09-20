@@ -39,6 +39,8 @@ class ThingCarousel extends React.Component {
       secondsPerThing: 20,
       secondsElapsed: 0,
       carouselOn: false,
+      navOptionsShow: true,
+      navOptionsClass: '',
 
       jsonUrl: undefined, // 'links.json',
       jsonUrlList: [],
@@ -121,7 +123,7 @@ class ThingCarousel extends React.Component {
             route.origUrl = loc_hash;
             routes.push(route);
           }
-          for (const key of ["fullscreen", "play", "urls"]) {
+          for (const key of ["fullscreen", "play", "urls", "shownav"]) {
             if (key in params) {
               params[key] = JSON.parse(params[key]);
               if (key === "urls") {
@@ -142,6 +144,11 @@ class ThingCarousel extends React.Component {
                 route.name = 'play';
                 route.value = new Boolean(params[key]).valueOf();
                 lastRoutes.push(route);
+              } else if (key === "shownav") {
+                routes.push({
+                  name: 'shownav',
+                  value: new Boolean(params[key]).valueOf()
+                });
               }
             }
           }
@@ -166,7 +173,7 @@ class ThingCarousel extends React.Component {
     var firstThinglinkItem = undefined;
     for (var i = 0; i < routes.length; i++) {
       var route = routes[i];
-      console.log('handleRoute>');
+      console.log('handleRoute>', route.name);
       console.log(route);
       if (route.name === undefined) {
         continue;
@@ -198,11 +205,11 @@ class ThingCarousel extends React.Component {
                                 this.handleLoadJSONSuccess.bind(!append));
         }
       } else if (route.name === 'fullscreen') {
-        console.log("route.name", "fullscreen");
         this.handleIframeFullscreen({}, route.value);
       } else if (route.name === 'play') {
-        console.log("route.name", "play");
         this.handleOnOffClick({}, route.value);
+      } else if (route.name === 'shownav') {
+        this.handleNavOptions({}, route.value);
       } else {
         console.log("ERROR: unknown route", route);
       }
@@ -371,17 +378,26 @@ class ThingCarousel extends React.Component {
     if (forceStatus != null) {
       carouselOn = forceStatus;
     } else {
-      if (this.state.carouselOn === false) {
-        carouselOn = true;
-      } else {
-        carouselOn = false;
-      }
+      carouselOn = this.state.carouselOn ? false : true;
     }
     this.setState({
       'carouselOn': carouselOn
     });
     console.log('this.state.carouselOn', carouselOn);
     this._dt = +(new Date); // TODO:
+  }
+
+  handleNavOptions = (elem, showNav) => {
+    var navOptionsShow;
+    if (showNav != null) {
+      navOptionsShow = showNav;
+    }
+    //else {
+    //  navOptionsShow = this.state.navOptionsShow ? false : true;
+    //}
+    this.setState({
+      'navOptionsShow': navOptionsShow
+    });
   }
 
   handleLinkListClick = (item, i, event) => {
@@ -602,7 +618,10 @@ class ThingCarousel extends React.Component {
     var this_ = this;
     return (
       <div className="thingCarousel">
-        <div id="nav">
+        <div id="nav"
+          style={{display: this.state.navOptionsShow ? 'block' :
+                'none'}}
+          className={this.state.navOptionsClass}>
           <a href={this.state.current ? this.state.current.url : ''}
             >{this.state.current ? this.state.current.url : ''}</a>
           <div id="thingList_window">
